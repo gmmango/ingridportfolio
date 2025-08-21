@@ -240,7 +240,7 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl text-(--color-secondary) text-center max-w-2xl mb-8"
           >
-            Whether you have a project in mind or just want to say hello, I'd love to hear from you.
+            Whether you have a project in mind or just want to say hello, I&apos;d love to hear from you.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
