@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #0FA3B1;
+  --color-secondary: #0FA3B1;
+  --background-primary: #F9F7F3;
+  --background-secondary: #0FA3B1;
+  --accent-color: #B5E2FA;
+  --accent-hover: #0FA3B1;
+  --border-color: #B5E2FA;
+}
+/* Light Theme (uncomment to use) */
+/*
+:root {
+  --color-primary: #1a1a1a;
+  --color-secondary: #575757;
+  --background-primary: #ffffff;
+  --background-secondary: #f0f0f0;
+  --accent-color: #1a1a1a;
+  --accent-hover: #333333;
+  --border-color: #d4d4d4;
+}
+*/
+
+html, body {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  font-size: 3rem; 
+  line-height: 1;
+}
+
+h2 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 4rem;
+  }
+  h2 {
+    font-size: 3rem;
+  }
+  h3 {
+    font-size: 2rem;
+  }
+}

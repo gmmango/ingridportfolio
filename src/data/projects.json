@@ -1,0 +1,9 @@
+[
+  {
+    "slug": "project1",
+    "title": "Cinematic Animation Project",
+    "thumbnail": "/images/project1-thumbnail.webp",
+    "videoUrl": "https://www.youtube.com/embed/VIDEO_ID",
+    "description": "A short description of the project."
+  }
+]
