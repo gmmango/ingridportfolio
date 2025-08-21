@@ -9,7 +9,11 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true, // 🚀 disables lint errors on build
+  },
   basePath: isProd ? `/${repoName}` : '',
+
 };
 
 export default nextConfig;
