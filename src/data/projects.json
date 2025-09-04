@@ -1,9 +1,136 @@
-[
-  {
-    "slug": "project1",
-    "title": "Cinematic Animation Project",
-    "thumbnail": "/images/project1-thumbnail.webp",
-    "videoUrl": "https://www.youtube.com/embed/VIDEO_ID",
-    "description": "A short description of the project."
-  }
-]
+{
+  "projects": [
+    {
+      "id": "Victoria-Regia",
+      "title": "Victoria Regia",
+      "shortDescription": "Epic fantasy character animation with advanced rigging",
+      "description": "Soul of Vitória-Régia U+002d a stylized 3D character and environment inspired by Brazilian folklore. Responsible for concept, sculpting, retopology, texturing, shading, and rendering. Includes character breakdown, clay renders, and final environment shots.",
+      "category": "character",
+      "tags": ["Character Animation", "Rigging", "Blender", "Substance Painter"],
+      "thumbnail": "https://cdna.artstation.com/p/assets/images/images/070/695/430/large/ingrid-sayuri-lima-3.jpg?1703196627",
+      "media": {
+        "type": "image",
+        "src": "https://cdna.artstation.com/p/assets/images/images/070/695/430/large/ingrid-sayuri-lima-3.jpg?1703196627",
+        "poster": "/images/project-guardian.webp"
+      },
+      "tools": ["Blender", "Substance Painter", "After Effects"],
+      "year": 2024,
+      "featured": true,
+      "externalLinks": {
+        "project": "https://www.youtube.com/watch?v=VIDEO_ID"
+      }
+    },
+    {
+      "id": "aetherium",
+      "title": "Aetherium Core",
+      "shortDescription": "Dynamic motion graphics with particle systems",
+      "description": "A futuristic motion graphics piece showcasing energy flow and particle systems around a central core. Features complex dynamics, procedural animations, and striking visual effects.",
+      "category": "motion-graphics",
+      "tags": ["Motion Graphics", "Particles", "Cinema 4D", "Octane"],
+      "thumbnail": "/images/project-aetherium.webp",
+      "media": {
+        "type": "video",
+        "src": "/videos/aetherium-demo.mp4",
+        "poster": "/images/project-aetherium.webp"
+      },
+      "tools": ["Cinema 4D", "Octane", "After Effects", "Trapcode Suite"],
+      "duration": "1:20",
+      "year": 2024,
+      "featured": true,
+      "externalLinks": {
+        "youtube": "https://www.youtube.com/watch?v=VIDEO_ID"
+      }
+    },
+    {
+      "id": "wild",
+      "title": "Wild Frontier",
+      "shortDescription": "Photorealistic environment with dynamic lighting",
+      "description": "An immersive natural environment showcasing advanced lighting techniques, realistic vegetation, and atmospheric effects. Created as part of an environmental storytelling series.",
+      "category": "architectural",
+      "tags": ["Environment", "Lighting", "Blender", "Photorealism"],
+      "thumbnail": "/images/project-wild.webp",
+      "media": {
+        "type": "image",
+        "src": "/images/project-wild-full.webp",
+        "gallery": [
+          "/images/wild-001.webp",
+          "/images/wild-002.webp",
+          "/images/wild-003.webp"
+        ]
+      },
+      "tools": ["Blender", "Cycles", "World Creator", "Substance Designer"],
+      "year": 2024,
+      "featured": false
+    },
+    {
+      "id": "nova",
+      "title": "Project Nova",
+      "shortDescription": "Explosive VFX simulation and compositing",
+      "description": "A high-energy VFX sequence featuring destruction, particle effects, and advanced compositing techniques. Demonstrates mastery of simulation software and post-production workflows.",
+      "category": "vfx",
+      "tags": ["VFX", "Simulation", "Houdini", "Nuke"],
+      "thumbnail": "/images/project-nova.webp",
+      "media": {
+        "type": "video",
+        "src": "/videos/nova-demo.mp4",
+        "poster": "/images/project-nova.webp"
+      },
+      "tools": ["Houdini", "Nuke", "Maya", "RealFlow"],
+      "duration": "0:30",
+      "year": 2023,
+      "featured": true
+    },
+    {
+      "id": "spirit",
+      "title": "Forest Spirit",
+      "shortDescription": "Organic character animation with natural movement",
+      "description": "A graceful character animation study focusing on organic movement and interaction with natural elements. Features advanced facial animation and cloth simulation.",
+      "category": "character",
+      "tags": ["Character Animation", "Facial Animation", "Maya", "Marvelous Designer"],
+      "thumbnail": "/images/project-spirit.webp",
+      "media": {
+        "type": "video",
+        "src": "/videos/spirit-demo.mp4",
+        "poster": "/images/project-spirit.webp"
+      },
+      "tools": ["Maya", "Arnold", "Marvelous Designer", "ZBrush"],
+      "duration": "1:15",
+      "year": 2023,
+      "featured": false
+    },
+    {
+      "id": "city",
+      "title": "Cityscape",
+      "shortDescription": "Urban architectural visualization with cinematic flair",
+      "description": "A sweeping urban landscape combining architectural precision with cinematic storytelling. Features detailed modeling, realistic lighting, and camera animation.",
+      "category": "architectural",
+      "tags": ["Architectural Viz", "Urban Design", "3ds Max", "V-Ray"],
+      "thumbnail": "/images/project-city.webp",
+      "media": {
+        "type": "video",
+        "src": "/videos/city-demo.mp4",
+        "poster": "/images/project-city.webp"
+      },
+      "tools": ["3ds Max", "V-Ray", "AutoCAD", "Photoshop"],
+      "duration": "2:00",
+      "year": 2023,
+      "featured": false
+    }
+  ],
+  "heroVideos": [
+    {
+      "id": "main-hero",
+      "title": "Main Hero Video",
+      "src": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "poster": "/images/hero.webp",
+      "active": true
+    },
+    {
+      "id": "showreel-hero",
+      "title": "Animation Showreel",
+      "src": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      "poster": "/images/showreel-hero.webp",
+      "active": false
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #0FA3B1;
-  --color-secondary: #0FA3B1;
-  --background-primary: #F9F7F3;
-  --background-secondary: #0FA3B1;
-  --accent-color: #B5E2FA;
-  --accent-hover: #0FA3B1;
-  --border-color: #B5E2FA;
+  --color-primary: #2d2d34;
+  --color-secondary: #ceb1be;
+  --background-primary: #f1e4e8;
+  --background-secondary: #e2dcde;
+  --accent-color: #b97375;
+  --accent-hover: #a26567;
+  --border-color: #ceb1be;
 }
 /* Light Theme (uncomment to use) */
 /*
