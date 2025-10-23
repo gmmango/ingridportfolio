@@ -8,7 +8,7 @@
     "build": "next build",
     "build:ci": "next build --no-lint",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "deploy": "gh-pages -d placeholder"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.876.0",

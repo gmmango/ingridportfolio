@@ -43,3 +43,5 @@ next-env.d.ts
 
 .filestructure
 
+# Deployment artifacts/temporary files
+placeholder/
