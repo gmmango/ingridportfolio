@@ -2,61 +2,49 @@
 
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import Sidenav from "@/components/Sidenav";
-import ProjectCard, { Project } from "@/components/ProjectCard";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
+import ProjectCard from "@/components/ProjectCard";
 import VideoEmbedded, { HeroVideo } from "@/components/VideoEmbedded";
+import { getProjectsByCategory, getHeroVideos } from "@/utils/projects";
+import { getAllCategories } from "@/data/config/categories";
 
+// Dynamic import for 3D Skills Section (client-side only, code-split for performance)
+const SkillsSection = dynamic(
+  () => import("@/components/skills/SkillsSection").then((mod) => ({ default: mod.SkillsSection })),
+  {
+    loading: () => (
+      <div className="min-h-screen bg-[var(--background-primary)] flex items-center justify-center">
+        <div className="text-5xl animate-bounce">☁️</div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
-// Import the data
-import projectsData from "@/data/projects.json";
-
-const sections = [
-  { id: "home", title: "Home" },
-  { id: "portfolio", title: "Portfolio" },
-  { id: "skills", title: "Skills" },
-  { id: "contact", title: "Contact" },
-];
-
-const skills = [
-  "Character Animation",
-  "Environment Modeling",
-  "Visual Effects (VFX)",
-  "Rigging & Skinning",
-  "Motion Graphics",
-  "Texturing & Lighting",
-  "3D Rendering",
-  "Asset Creation",
-];
-
-// Project categories for filtering
+// Project categories for filtering with colors matching skills section aesthetic
 const categories = [
-  { id: "all", label: "All Projects" },
-  { id: "featured", label: "Featured" },
-  { id: "character", label: "Character" },
-  { id: "motion-graphics", label: "Motion Graphics" },
-  { id: "architectural", label: "Architectural" },
-  { id: "vfx", label: "VFX" },
+  { id: "all", label: "All", color: "#f5a4c7" },           // Pink (matches skills "All")
+  { id: "character", label: "Character", color: "#f5c4a4" }, // Peach
+  { id: "motion-graphics", label: "Motion Graphics", color: "#a4d4f5" }, // Sky blue
+  { id: "architectural", label: "Architectural", color: "#a4f5c4" }, // Mint green
+  { id: "vfx", label: "VFX", color: "#c4a4f5" },           // Lavender
 ];
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentVideoId, setCurrentVideoId] = useState<string>("");
-  
+  const [refsReady, setRefsReady] = useState(0);
+
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
-  // Extract data from JSON
-  const projects: Project[] = projectsData.projects as Project[];
-  const heroVideos: HeroVideo[] = projectsData.heroVideos;
-
-  // Filter projects based on selected category
-  const filteredProjects = projects.filter(project => {
-    if (selectedCategory === "all") return true;
-    if (selectedCategory === "featured") return project.featured;
-    return project.category === selectedCategory;
-  });
+  // Get data using utility functions
+  const heroVideos = getHeroVideos();
+  const filteredProjects = getProjectsByCategory(selectedCategory);
 
   // Set initial hero video
   useEffect(() => {
@@ -94,409 +82,253 @@ export default function HomePage() {
         }
       });
     };
-  }, []);
-
-  const handleProjectClick = (project: Project) => {
-    setSelectedProject(project);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedProject(null);
-  };
+  }, [refsReady]);
 
   const handleVideoChange = (videoId: string) => {
     setCurrentVideoId(videoId);
   };
 
   return (
-    <main className="min-h-screen bg-(--background-primary) text-(--color-primary) flex">
-      <Sidenav activeSection={activeSection} />
+    <main className="min-h-screen bg-[var(--background-primary)] text-[var(--color-primary)]">
+      <Header activeSection={activeSection} />
 
-      <div className="grow w-full">
-        {/* Hero Section */}
-        <section
-          id="home"
-          ref={(el) => {
+      {/* Hero Section */}
+      <section
+        id="home"
+        ref={(el) => {
+          if (el && !sectionRefs.current[0]) {
             sectionRefs.current[0] = el;
-          }}
-          className="relative h-screen w-full overflow-hidden"
-        >
+            setRefsReady((prev) => prev + 1);
+          }
+        }}
+        className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center bg-[var(--background-primary)]"
+      >
+        {/* Decorative background shapes - subtle glow on dark */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-[#f5a4c7]/10 rounded-full blur-3xl" />
+          <div className="absolute top-40 right-20 w-80 h-80 bg-[#a4d4f5]/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-32 left-1/4 w-48 h-48 bg-[#c4a4f5]/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-1/3 w-56 h-56 bg-[#a4f5c4]/8 rounded-full blur-3xl" />
+        </div>
+
+        {/* Background with Video - dark overlay */}
+        <div className="absolute inset-0 z-0 opacity-50">
+          <div className="absolute inset-0 bg-gradient-to-b from-[var(--background-primary)]/60 via-[var(--background-primary)]/80 to-[var(--background-primary)] z-10"></div>
           <VideoEmbedded
             videos={heroVideos}
             currentVideoId={currentVideoId}
-            className="absolute inset-0 h-full w-full"
+            className="w-full h-full"
             onVideoChange={handleVideoChange}
             autoPlay
             loop
             muted
             playsInline
           />
-          
-          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className="text-5xl md:text-7xl font-extrabold tracking-tighter drop-shadow-lg text-white"
-            >
-              Bringing Worlds to Life
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.3 }}
-              className="mt-4 max-w-3xl text-lg md:text-xl text-gray-200 drop-shadow-md"
-            >
-              I&apos;m a 3D animator crafting cinematic experiences through storytelling, motion, and intricate detail.
-            </motion.p>
-            
-            {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.6 }}
-              className="mt-8"
-            >
-              <button
-                onClick={() => {
-                  document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white font-bold rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30 hover:border-white/50"
-              >
-                View My Work
-              </button>
-            </motion.div>
-          </div>
-        </section>
+        </div>
 
-        {/* Portfolio Section */}
-        <section
-          id="portfolio"
-          ref={(el) => {
-            sectionRefs.current[1] = el;
+        {/* Hero Content */}
+        <div className="relative z-20 flex flex-col items-center text-center px-6 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="mb-6"
+          >
+            <span className="text-5xl">✨</span>
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-[var(--color-primary)] text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
+          >
+            3D Artist & Animator
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-[var(--color-secondary)] text-base md:text-lg font-light leading-relaxed max-w-2xl"
+          >
+            Crafting immersive digital experiences through character animation, visual effects, and cinematic storytelling
+          </motion.p>
+        </div>
+
+        {/* Scroll Indicator - soft pill style matching nav */}
+        <motion.a
+          href="#portfolio"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
+          style={{
+            backgroundColor: "transparent",
+            borderColor: "#a4d4f5",
+            boxShadow: "0 4px 14px rgba(164, 212, 245, 0.2)",
           }}
-          className="min-h-screen py-20 px-4 md:px-12"
         >
-          <div className="max-w-7xl mx-auto">
+          <span className="text-[var(--color-secondary)] text-sm font-semibold">Explore</span>
+          <svg
+            className="w-4 h-4 text-[#a4d4f5] animate-bounce"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </motion.a>
+      </section>
+
+      {/* Projects Section */}
+      <section
+        id="portfolio"
+        ref={(el) => {
+          if (el && !sectionRefs.current[1]) {
+            sectionRefs.current[1] = el;
+            setRefsReady((prev) => prev + 1);
+          }
+        }}
+        className="w-full pt-24 pb-20 px-6 lg:px-20 bg-[var(--background-secondary)] scroll-mt-0"
+      >
+        <div className="max-w-[1400px] mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-12 text-center"
+          >
+            <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-primary)] mb-3">Projects</h2>
+            <p className="text-[var(--color-secondary)] text-lg max-w-md mx-auto leading-relaxed mb-6">
+              A selection of my favorite creative work
+            </p>
+
+            {/* Category Filter - styled to match Skills CategoryPills */}
+            <div className="flex flex-wrap gap-2 justify-center pb-4">
+              {categories.map((category) => {
+                const isActive = selectedCategory === category.id;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 border-2"
+                    style={{
+                      backgroundColor: isActive ? category.color : "transparent",
+                      borderColor: category.color,
+                      color: isActive ? "#0f0f0f" : "var(--color-secondary)",
+                      transform: isActive ? "scale(1.05)" : "scale(1)",
+                      boxShadow: isActive ? `0 4px 14px ${category.color}40` : "none",
+                    }}
+                  >
+                    {category.label}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* Projects Grid */}
+          <div className="masonry">
+            {filteredProjects.map((project) => (
+              <div key={project.id} className="masonry-item">
+                <ProjectCard
+                  project={project}
+                  layout="grid"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* No projects message */}
+          {filteredProjects.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <p className="text-[var(--color-secondary)] text-base">
+                No projects found in this category.
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </section>
+
+      {/* Skills Section - Interactive 3D */}
+      <SkillsSection
+        id="skills"
+        ref={(el) => {
+          if (el && !sectionRefs.current[2]) {
+            sectionRefs.current[2] = el;
+            setRefsReady((prev) => prev + 1);
+          }
+        }}
+        className="scroll-mt-0"
+      />
+
+      {/* Contact Section */}
+      <section
+        id="contact"
+        ref={(el) => {
+          if (el && !sectionRefs.current[3]) {
+            sectionRefs.current[3] = el;
+            setRefsReady((prev) => prev + 1);
+          }
+        }}
+        className="bg-[var(--background-primary)] py-24 px-6 lg:px-20 scroll-mt-0"
+      >
+        <div className="max-w-[1400px] mx-auto">
+          <div className="max-w-3xl mx-auto text-center">
             <motion.h2
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-5xl md:text-6xl font-bold mb-12 text-center"
+              transition={{ duration: 0.6 }}
+              className="text-3xl md:text-4xl font-semibold text-[var(--color-primary)] leading-tight mb-6"
             >
-              Portfolio
+              Let&apos;s Work Together
             </motion.h2>
-
-            {/* Category Filter */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-[var(--color-secondary)] mb-8 text-base md:text-lg font-light leading-relaxed"
+            >
+              I&apos;m currently seeking opportunities in animation studios, post-production houses, or freelance projects.
+              Whether you need character animation, motion graphics, or VFX work, I&apos;d love to hear about your project.
+            </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-wrap justify-center gap-4 mb-12"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                    selectedCategory === category.id
-                      ? 'bg-(--accent-color) text-(--background-primary)'
-                      : 'bg-(--background-secondary) text-(--color-secondary) hover:bg-(--accent-color) hover:text-(--background-primary)'
-                  }`}
-                >
-                  {category.label}
+              <Link href="mailto:your.email@example.com">
+                <button className="btn-gradient text-white font-medium text-sm px-8 py-4 rounded-full hover:opacity-90 transition-all soft-shadow">
+                  Get in Touch
                 </button>
-              ))}
-            </motion.div>
-
-            {/* Projects Grid */}
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {filteredProjects.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
-                  <ProjectCard
-                    project={project}
-                    onOpenModal={handleProjectClick}
-                    layout={project.featured ? 'featured' : 'grid'}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* No projects message */}
-            {filteredProjects.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-20"
+              </Link>
+              <a
+                href="#portfolio"
+                className="text-[var(--color-secondary)] hover:text-[var(--accent-color)] font-medium text-sm transition-colors"
               >
-                <p className="text-(--color-secondary) text-lg">
-                  No projects found in this category.
-                </p>
-              </motion.div>
-            )}
+                View My Work
+              </a>
+            </motion.div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Skills Section */}
-        <section
-          id="skills"
-          ref={(el) => {
-            sectionRefs.current[2] = el;
-          }}
-          className="min-h-screen py-20 px-4 md:px-12 flex flex-col items-center justify-center"
-        >
-          <motion.h2
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-6xl font-bold mb-12 text-center"
-          >
-            My Skills
-          </motion.h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 w-full max-w-7xl">
-            {skills.map((skill, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-(--background-secondary) text-(--color-primary) p-6 rounded-lg text-center hover:bg-(--accent-color) hover:text-(--background-primary) transition-all duration-300"
-              >
-                <p className="text-lg font-semibold">{skill}</p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+      {/* Footer */}
+      <Footer />
 
-        {/* Contact Section */}
-        <section
-          id="contact"
-          ref={(el) => {
-            sectionRefs.current[3] = el;
-          }}
-          className="min-h-screen py-20 px-4 md:px-12 flex flex-col items-center justify-center"
-        >
-          <motion.h2
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-6xl font-bold mb-12 text-center"
-          >
-            Get in Touch
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl text-(--color-secondary) text-center max-w-2xl mb-8"
-          >
-            Whether you have a project in mind or just want to say hello, I&apos;d love to hear from you.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <Link
-              href="mailto:your.email@example.com"
-              className="px-8 py-4 bg-(--accent-color) text-(--background-primary) font-bold rounded-full hover:scale-105 transition-transform"
-            >
-              Email Me
-            </Link>
-          </motion.div>
-        </section>
-      </div>
-
-      {/* Project Modal */}
-      {selectedProject && (
-        <ProjectModal project={selectedProject} onClose={handleCloseModal} />
-      )}
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
     </main>
   );
 }
-
-// Project Modal Component
-interface ProjectModalProps {
-  project: Project;
-  onClose: () => void;
-}
-
-const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [onClose]);
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
-      onClick={handleBackdropClick}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="relative max-w-4xl w-full max-h-[90vh] bg-(--background-primary) rounded-2xl overflow-hidden"
-      >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white transition-colors"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        {/* Modal Content */}
-        <div className="overflow-y-auto max-h-full">
-          {/* Media Section */}
-          <div className="relative aspect-video bg-gray-900">
-            {project.media.type === 'video' ? (
-              <video
-                className="w-full h-full object-cover"
-                controls
-                poster={project.media.poster}
-                autoPlay
-                muted
-              >
-                <source src={project.media.src} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <img
-                src={project.media.src}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
-
-          {/* Content */}
-          <div className="p-8">
-            <div className="flex flex-col lg:flex-row lg:gap-12">
-              {/* Left Column */}
-              <div className="lg:flex-1">
-                <h2 className="text-3xl font-bold mb-4 text-(--color-primary)">
-                  {project.title}
-                </h2>
-                <p className="text-(--color-secondary) mb-6 leading-relaxed">
-                  {project.description}
-                </p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-(--background-secondary) text-(--color-primary) text-sm rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {/* External Links */}
-                {project.externalLinks && (
-                  <div className="flex gap-4">
-                    {project.externalLinks.youtube && (
-                      <Link
-                        href={project.externalLinks.youtube}
-                        target="_blank"
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                      >
-                        YouTube
-                      </Link>
-                    )}
-                    {project.externalLinks.behance && (
-                      <Link
-                        href={project.externalLinks.behance}
-                        target="_blank"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        Behance
-                      </Link>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Right Column */}
-              <div className="lg:w-80 mt-8 lg:mt-0">
-                <div className="bg-(--background-secondary) p-6 rounded-lg">
-                  <h3 className="font-bold mb-4 text-(--color-primary)">Project Details</h3>
-                  
-                  <div className="space-y-3 text-sm">
-                    <div>
-                      <span className="text-(--color-secondary)">Year:</span>
-                      <span className="ml-2 text-(--color-primary)">{project.year}</span>
-                    </div>
-                    
-                    {project.duration && (
-                      <div>
-                        <span className="text-(--color-secondary)">Duration:</span>
-                        <span className="ml-2 text-(--color-primary)">{project.duration}</span>
-                      </div>
-                    )}
-                    
-                    <div>
-                      <span className="text-(--color-secondary)">Tools Used:</span>
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {project.tools.map((tool, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-(--background-primary) text-(--color-secondary) text-xs rounded border"
-                          >
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};

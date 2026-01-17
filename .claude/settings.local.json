@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run deploy:*)",
+      "Bash(npx wrangler zones:*)",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(npx wrangler deploy)",
+      "Bash(dir /s \"d:\\\\Website\\\\ingridportfolio\\\\src\")"
+    ]
+  }
+}

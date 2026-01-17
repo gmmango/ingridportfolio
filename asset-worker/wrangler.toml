@@ -1,12 +1,11 @@
 name = "ingridsayuri3d-worker"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
-workers_dev = false
 
 [vars]
 ALLOWED_REFERER = "https://www.ingridsayuri.com"
 BUCKET_NAME = "ingridsayuri3d"
 
 [[routes]]
-pattern = "https://assets.ingridsayuri.com/*"
-zone_id = "ingridsayuri.com"
+pattern = "assets.ingridsayuri.com/*"
+zone_id = "0bab6854748608efbd6093e4095407a9"

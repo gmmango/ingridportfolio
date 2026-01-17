@@ -10,13 +10,20 @@ export interface Env {
 }
 
 const URL_EXPIRATION = 300; // 5 minutes
-const ALLOWED_EXTENSIONS = ['.jpg', '.png', '.gif', '.pdf']; // optional whitelist
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.mp4', '.mov']; // optional whitelist
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const referer = request.headers.get('Referer') || '';
-    if (!referer.startsWith(env.ALLOWED_REFERER)) {
+    // if (!referer.startsWith(env.ALLOWED_REFERER)) {
+    const isAllowedReferer = referer.startsWith(env.ALLOWED_REFERER) ||
+                             referer.startsWith('http://localhost:') ||
+                             referer.startsWith('http://127.0.0.1:');
+
+    if (!isAllowedReferer) {
       return new Response('Forbidden', { status: 403 });
+    
+      //return new Response('Forbidden', { status: 403 });
     }
 
     const url = new URL(request.url);
@@ -45,6 +52,38 @@ export default {
     });
 
     try {
+      // For video files, proxy the content to support range requests
+      const isVideo = filePath.endsWith('.mp4') || filePath.endsWith('.mov');
+
+      if (isVideo) {
+        const signedUrl = await getSignedS3Url(s3Client, command, { expiresIn: URL_EXPIRATION });
+
+        // Forward the range header if present
+        const range = request.headers.get('range');
+        const headers: Record<string, string> = {};
+        if (range) {
+          headers['Range'] = range;
+        }
+
+        const response = await fetch(signedUrl, { headers });
+
+        // Create new response with CORS and caching headers
+        return new Response(response.body, {
+          status: response.status,
+          headers: {
+            'Content-Type': response.headers.get('Content-Type') || 'video/mp4',
+            'Content-Length': response.headers.get('Content-Length') || '',
+            'Accept-Ranges': 'bytes',
+            'Access-Control-Allow-Origin': '*',
+            'Cache-Control': 'public, max-age=31536000',
+            ...(response.headers.get('Content-Range') && {
+              'Content-Range': response.headers.get('Content-Range') || '',
+            }),
+          },
+        });
+      }
+
+      // For images, redirect as before
       const signedUrl = await getSignedS3Url(s3Client, command, { expiresIn: URL_EXPIRATION });
       return Response.redirect(signedUrl, 302);
     } catch (err) {

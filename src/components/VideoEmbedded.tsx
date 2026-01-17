@@ -120,34 +120,6 @@ const VideoEmbedded: React.FC<VideoEmbeddedProps> = ({
         </div>
       )}
 
-      {/* Video Selector (when multiple videos available) */}
-      {videos.length > 1 && onVideoChange && (
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-          <div className="flex space-x-2 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2">
-            {videos.map((video, index) => (
-              <button
-                key={video.id}
-                onClick={() => handleVideoSelect(video.id)}
-                className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                  video.id === activeVideo.id 
-                    ? 'bg-white' 
-                    : 'bg-white/40 hover:bg-white/60'
-                }`}
-                title={video.title}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Video Info */}
-      {activeVideo.title && videos.length > 1 && (
-        <div className="absolute top-6 right-6 z-10">
-          <div className="bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2">
-            <p className="text-white text-sm font-medium">{activeVideo.title}</p>
-          </div>
-        </div>
-      )}
 
       {/* Gradient Overlay for Text Readability */}
       <div className="absolute inset-0 bg-black/40 pointer-events-none" />
